@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Feedback | Feedback Hub</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to right, #e0f2fe, #eff6ff);
+      margin: 0;
+      padding: 20px;
+    }
+
+    .profile-section {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 30px;
+      padding: 15px;
+      background: #fff;
+      border-radius: 15px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      animation: slideDown 0.5s ease-in-out;
+    }
+
+    .profile-icon {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background-color: #1e3a8a;
+      color: white;
+      font-size: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+    }
+
+    .feedback-card {
+      background: #fff;
+      padding: 20px;
+      margin-bottom: 20px;
+      border-radius: 12px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+      animation: fadeIn 0.6s ease;
+    }
+
+    .feedback-card h4 {
+      margin: 0 0 10px;
+      color: #1e3a8a;
+    }
+
+    .feedback-card p {
+      margin: 5px 0;
+    }
+
+    .status {
+      font-weight: bold;
+      color: #2563eb;
+    }
+
+    .new-feedback-form {
+      background: white;
+      padding: 20px;
+      margin-top: 40px;
+      border-radius: 15px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      animation: fadeIn 0.6s ease;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    .form-group label {
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    .form-group input, .form-group select, .form-group textarea {
+      width: 100%;
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid #cbd5e1;
+      font-size: 16px;
+    }
+
+    .form-actions {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+    }
+
+    button {
+      padding: 12px 24px;
+      font-size: 16px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: bold;
+      background-color: #1e3a8a;
+      color: white;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #3b82f6;
+    }
+
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+  </style>
+</head>
+<body>
+
+  <div class="profile-section">
+    <div class="profile-icon" id="profile-icon">A</div>
+    <div>
+      <h2 id="student-name">Student Name</h2>
+      <p id="student-matric">Matric No</p>
+    </div>
+  </div>
+
+  <!-- Feedback List -->
+  <div id="feedback-list"></div>
+
+  <!-- New Feedback Form -->
+  <div class="new-feedback-form">
+    <h3>Submit New Feedback</h3>
+    <form id="feedbackForm">
+      <div class="form-group">
+        <label for="feedback-type">Type of Feedback</label>
+        <select id="feedback-type" required>
+          <option disabled selected value="">-- Select Category --</option>
+          <option>Course</option>
+          <option>Lecturer</option>
+          <option>Facilities</option>
+          <option>Health & Well-being</option>
+          <option>Other</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="feedback-description">Your Feedback</label>
+        <textarea id="feedback-description" required></textarea>
+      </div>
+      <div class="form-actions">
+        <button type="submit">Submit Feedback</button>
+      </div>
+    </form>
+  </div>
+
+  <script>
+    const name = localStorage.getItem('studentName') || 'Student';
+    const matric = localStorage.getItem('matricNumber') || 'N/A';
+    const feedbacks = JSON.parse(localStorage.getItem('registeredFeedbacks')) || [];
+
+    document.getElementById('student-name').textContent = name;
+    document.getElementById('student-matric').textContent = matric;
+    document.getElementById('profile-icon').textContent = name[0].toUpperCase();
+
+    const listContainer = document.getElementById('feedback-list');
+    const userFeedbacks = feedbacks.filter(fb => fb.name === name && fb.matric === matric);
+
+    if (userFeedbacks.length === 0) {
+      listContainer.innerHTML = "<p>No feedback submitted yet.</p>";
+    } else {
+      userFeedbacks.forEach(fb => {
+        const card = document.createElement('div');
+        card.className = 'feedback-card';
+
+        card.innerHTML = `
+          <h4>${fb.type}</h4>
+          <p><strong>Feedback:</strong> ${fb.description}</p>
+          <p><strong>Admin Reply:</strong> ${fb.reply || 'No reply yet'}</p>
+          <p class="status">Status: ${fb.seen ? 'Seen 👁️' : 'Not Seen ⏳'}</p>
+        `;
+
+        listContainer.appendChild(card);
+      });
+    }
+
+    // Submit new feedback
+    document.getElementById('feedbackForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      const type = document.getElementById('feedback-type').value;
+      const description = document.getElementById('feedback-description').value.trim();
+
+      if (!type || !description) {
+        alert('Please fill in all fields.');
+        return;
+      }
+
+      const newFeedback = {
+        name,
+        matric,
+        type,
+        description,
+        reply: '',
+        seen: false,
+        submittedAt: new Date().toISOString()
+      };
+
+      const existing = JSON.parse(localStorage.getItem('registeredFeedbacks')) || [];
+      existing.push(newFeedback);
+      localStorage.setItem('registeredFeedbacks', JSON.stringify(existing));
+
+      // Refresh the feedback list and reset the form
+      window.location.reload();
+    });
+  </script>
+
+</body>
+</html>

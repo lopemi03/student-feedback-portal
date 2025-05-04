@@ -1,0 +1,167 @@
+<!-- feedback.html (Improved) -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Submit Feedback | Feedback Hub</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    body {
+      background: linear-gradient(to right, #dbeafe, #eff6ff);
+      font-family: 'Segoe UI', sans-serif;
+    }
+    .feedback-container {
+      max-width: 700px;
+      margin: 60px auto;
+      padding: 30px;
+      background-color: white;
+      border-radius: 20px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      animation: slideIn 0.5s ease-in-out;
+    }
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    h2 {
+      text-align: center;
+      color: #1e3a8a;
+      margin-bottom: 20px;
+    }
+    .form-group {
+      margin-bottom: 20px;
+    }
+    label {
+      font-weight: bold;
+      display: block;
+      margin-bottom: 8px;
+    }
+    
+    input, select, textarea {
+      width: 100%;
+      padding: 12px;
+      border-radius: 10px;
+      border: 1px solid #cbd5e1;
+      font-size: 16px;
+    }
+    textarea {
+      height: 120px;
+      resize: vertical;
+    }
+    select, textarea {
+      width: 100%;
+      padding: 12px;
+      border-radius: 10px;
+      border: 1px solid #cbd5e1;
+      font-size: 16px;
+    }
+    textarea {
+      height: 120px;
+      resize: vertical;
+    }
+    .form-actions {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+    }
+    button {
+      padding: 12px 24px;
+      font-size: 16px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: 0.3s ease;
+    }
+    .btn-primary {
+      background-color: #1e3a8a;
+      color: white;
+    }
+    .btn-primary:hover {
+      background-color: #3b82f6;
+    }
+    .btn-secondary {
+      background-color: #e2e8f0;
+      color: #1e3a8a;
+    }
+    .btn-secondary:hover {
+      background-color: #cbd5e1;
+    }
+  </style>
+</head>
+<body>
+  <div class="feedback-container">
+    <h2>Submit Your Feedback</h2>
+    <form id="feedback-form">
+      <div class="form-group">
+        <div class="form-group">
+            <label>Full Name</label>
+            <input type="text" name="name" id="name" placeholder="Enter your full name" required>
+          </div>
+          <div class="form-group">
+            <label>Matric Number</label>
+            <input type="text" name="matric" id="matric" placeholder="Enter your matric number" required>
+          </div>
+        <label>Type of Feedback</label>
+        <select name="type" id="feedback-type" required>
+          <option disabled selected value="">-- Select Category --</option>
+          <option>Course</option>
+          <option>Lecturer</option>
+          <option>Facilities</option>
+          <option>Health & Well-being</option>
+          <option>Other</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Your Feedback</label>
+        <textarea name="description" maxlength="500" placeholder="Let us know your thoughts..." required></textarea>
+      </div>
+      <div class="form-actions">
+        <button type="submit" class="btn-primary">Submit</button>
+        <button type="reset" class="btn-secondary">Clear</button>
+      </div>
+    </form>
+  </div>
+  
+  <script>
+    document.getElementById('feedback-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+  
+      const name = document.getElementById('name').value.trim();
+      const matric = document.getElementById('matric').value.trim();
+      const type = document.getElementById('feedback-type').value;
+      const description = document.querySelector('textarea').value.trim();
+  
+      if (!name || !matric || !type || !description) {
+        alert('Please fill in all fields.');
+        return;
+      }
+  
+      // Save identity for next page
+      localStorage.setItem('studentName', name);
+      localStorage.setItem('matricNumber', matric);
+  
+      const newFeedback = {
+        name,
+        matric,
+        type,
+        description,
+        reply: '',
+        seen: false,
+        submittedAt: new Date().toISOString()
+      };
+  
+      const existing = JSON.parse(localStorage.getItem('registeredFeedbacks')) || [];
+      existing.push(newFeedback);
+      localStorage.setItem('registeredFeedbacks', JSON.stringify(existing));
+  
+      window.location.href = '/myfeedback.html';
+    });
+  </script>
+  
+
+
+  
+</body>
+</html>

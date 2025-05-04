@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Admin Dashboard</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #e0f2fe;
+      padding: 30px;
+    }
+
+    h2 {
+      color: #1e3a8a;
+      text-align: center;
+    }
+
+    .toolbar {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin: 20px auto;
+      flex-wrap: wrap;
+    }
+
+    input, select {
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+      flex: 1;
+      min-width: 200px;
+    }
+
+    .badge {
+      text-align: center;
+      margin: 20px auto;
+      color: white;
+      background: #1e3a8a;
+      display: inline-block;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-weight: bold;
+    }
+
+    .feedback-card {
+      background: white;
+      margin: 20px auto;
+      padding: 20px;
+      max-width: 700px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      animation: slideIn 0.3s ease-in-out;
+    }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .feedback-card span.badge {
+      background: #ef4444;
+      margin-bottom: 10px;
+      display: inline-block;
+    }
+
+    .meta {
+      color: #475569;
+      margin-bottom: 8px;
+    }
+
+    .reply-box {
+      width: 100%;
+      padding: 8px;
+      margin-top: 10px;
+      border-radius: 8px;
+      border: 1px solid #cbd5e1;
+      font-family: inherit;
+    }
+
+    button {
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 14px;
+      border: none;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .save-btn {
+      background: #1d4ed8;
+      color: white;
+      margin-top: 10px;
+    }
+
+    label {
+      display: block;
+      margin-top: 10px;
+    }
+
+  </style>
+</head>
+<body>
+  <h2>Admin Dashboard</h2>
+  <div class="badge" id="new-count">Loading...</div>
+
+  <div class="toolbar">
+    <input type="text" id="search-input" placeholder="Search feedback text...">
+    <select id="type-filter">
+      <option value="">All Types</option>
+      <option value="Course">Course</option>
+      <option value="Lecturer">Lecturer</option>
+      <option value="Facilities">Facilities</option>
+      <option value="Health & Well-being">Health & Well-being</option>
+      <option value="Other">Other</option>
+    </select>
+  </div>
+
+  <div id="feedback-list"></div>
+
+  <script>
+    window.addEventListener('DOMContentLoaded', () => {
+      const feedbackListEl = document.getElementById('feedback-list');
+      const searchInput = document.getElementById('search-input');
+      const filterSelect = document.getElementById('type-filter');
+      const newCountBadge = document.getElementById('new-count');
+
+      let anonymous = JSON.parse(localStorage.getItem('anonymousFeedbacks')) || [];
+      let registered = JSON.parse(localStorage.getItem('registeredFeedbacks')) || [];
+
+      let allFeedback = [
+        ...registered.map((f, i) => ({ ...f, isAnon: false, index: i })),
+        ...anonymous.map((f, i) => ({ ...f, isAnon: true, index: i }))
+      ];
+
+      // Ensure each feedback has a timestamp
+      allFeedback.forEach(fb => {
+        if (!fb.timestamp) {
+          fb.timestamp = new Date().toISOString();
+        }
+      });
+
+      // Sort by newest
+      allFeedback.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+      const renderFeedback = (data) => {
+        feedbackListEl.innerHTML = '';
+        let unseenCount = 0;
+
+        data.forEach(fb => {
+          const card = document.createElement('div');
+          card.className = 'feedback-card';
+
+          if (!fb.seen) {
+            const badge = document.createElement('span');
+            badge.className = 'badge';
+            badge.textContent = 'NEW';
+            card.appendChild(badge);
+            unseenCount++;
+          }
+
+          const title = document.createElement('h3');
+          title.textContent = fb.isAnon
+            ? `Anonymous (${fb.serial})`
+            : `${fb.name} (${fb.matric})`;
+          card.appendChild(title);
+
+          const type = document.createElement('p');
+          type.innerHTML = `<strong>Type:</strong> ${fb.type}`;
+          card.appendChild(type);
+
+          const desc = document.createElement('p');
+          desc.innerHTML = `<strong>Message:</strong> ${fb.description}`;
+          card.appendChild(desc);
+
+          const reply = document.createElement('textarea');
+          reply.placeholder = 'Enter your reply...';
+          reply.className = 'reply-box';
+          reply.value = fb.reply || '';
+          card.appendChild(reply);
+
+          const seenLabel = document.createElement('label');
+          const seenCheckbox = document.createElement('input');
+          seenCheckbox.type = 'checkbox';
+          seenCheckbox.checked = fb.seen || false;
+          seenLabel.appendChild(seenCheckbox);
+          seenLabel.append(' Mark as seen');
+          card.appendChild(seenLabel);
+
+          const saveBtn = document.createElement('button');
+          saveBtn.className = 'save-btn';
+          saveBtn.textContent = 'Save';
+          saveBtn.onclick = () => {
+            fb.reply = reply.value;
+            fb.seen = seenCheckbox.checked;
+
+            if (fb.isAnon) {
+              anonymous[fb.index] = fb;
+              localStorage.setItem('anonymousFeedbacks', JSON.stringify(anonymous));
+            } else {
+              registered[fb.index] = fb;
+              localStorage.setItem('registeredFeedbacks', JSON.stringify(registered));
+            }
+
+            alert('Saved successfully!');
+            location.reload();
+          };
+          card.appendChild(saveBtn);
+
+          feedbackListEl.appendChild(card);
+        });
+
+        newCountBadge.textContent = unseenCount > 0 ? `${unseenCount} New Feedback(s)` : 'No New Feedback';
+      };
+
+      const applyFilters = () => {
+        const query = searchInput.value.trim().toLowerCase();
+        const type = filterSelect.value;
+
+        let filtered = allFeedback.filter(fb => {
+          const matchesSearch = fb.description.toLowerCase().includes(query);
+          const matchesType = type ? fb.type === type : true;
+          return matchesSearch && matchesType;
+        });
+
+        renderFeedback(filtered);
+      };
+
+      searchInput.addEventListener('input', applyFilters);
+      filterSelect.addEventListener('change', applyFilters);
+
+      renderFeedback(allFeedback);
+    });
+  </script>
+</body>
+</html>

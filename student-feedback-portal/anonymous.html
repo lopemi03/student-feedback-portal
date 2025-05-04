@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Anonymous Feedback</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    body { font-family: 'Segoe UI', sans-serif; background: #eff6ff; padding: 40px; }
+    .container {
+      max-width: 600px;
+      margin: auto;
+      background: white;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      animation: slideIn 0.5s ease-in-out;
+    }
+    h2 { text-align: center; color: #1e3a8a; }
+    .form-group { margin-bottom: 20px; }
+    label { font-weight: bold; display: block; margin-bottom: 6px; }
+    textarea, select {
+      width: 100%;
+      padding: 10px;
+      font-size: 15px;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+    }
+    button {
+      width: 100%;
+      padding: 12px;
+      background: #1e3a8a;
+      color: white;
+      font-weight: bold;
+      border: none;
+      border-radius: 10px;
+      transition: 0.3s;
+    }
+    button:hover { background: #3b82f6; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Submit Anonymous Feedback</h2>
+    <form id="anon-form">
+      <div class="form-group">
+        <label>Type of Feedback</label>
+        <select required id="type">
+          <option value="">--Select--</option>
+          <option>Course</option>
+          <option>Lecturer</option>
+          <option>Facilities</option>
+          <option>Health & Well-being</option>
+          <option>Other</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Your Feedback</label>
+        <textarea id="description" maxlength="500" required placeholder="Write your message here..."></textarea>
+      </div>
+      <button type="submit">Submit Anonymously</button>
+    </form>
+  </div>
+
+  <script>
+    document.getElementById('anon-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const type = document.getElementById('type').value;
+      const description = document.getElementById('description').value;
+      const serial = 'FB-' + Math.floor(100000 + Math.random() * 900000);
+
+      const feedback = {
+        name: "Anonymous",
+        matric: "N/A",
+        type,
+        description,
+        serial,
+        anonymous: true,
+        status: "Not Seen",
+        reply: "",
+        date: new Date().toLocaleString()
+      };
+
+      const stored = JSON.parse(localStorage.getItem("feedbacks") || "[]");
+      stored.push(feedback);
+      localStorage.setItem("feedbacks", JSON.stringify(stored));
+      alert("Feedback submitted successfully!");
+      window.location.href = "index.html";
+      
+    });
+  </script>
+</body>
+</html>
