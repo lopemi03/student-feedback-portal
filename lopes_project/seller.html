@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Seller Registration</title>
+  
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<style>
+    textarea {
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  transition: border-color 0.3s;
+  resize: none;
+}
+
+textarea:focus {
+  border-color: #f57c00;
+  outline: none;
+}
+
+.form-container h1 {
+  color: #f57c00;
+}
+
+</style>
+<body>
+  <div class="form-container">
+    <h1>Seller Registration</h1>
+    <form id="sellerForm">
+  <label for="business-name">Business Name</label>
+  <input type="text" id="business-name" required>
+
+  <label for="product-name">Product Name</label>
+  <input type="text" id="product-name" required>
+
+  <label for="whatsapp">WhatsApp Number</label>
+  <input type="tel" id="whatsapp" required>
+
+  <label for="department">Department</label>
+  <input type="text" id="department" required>
+
+  <label for="description">Product Description</label>
+  <textarea id="description" rows="4" required></textarea>
+
+  <label for="product-image">Upload Product Image</label>
+  <input type="file" id="product-image" accept="image/*" >
+
+  <button type="submit" class="submit-btn"><a href="my-products.html">Submit and Continue</a></button>
+</form>
+
+
+  </div>
+  <script>
+  document.getElementById("sellerForm").addEventListener("submit", function (e) {
+    e.preventDefault();
+
+    const reader = new FileReader();
+    const file = document.getElementById("product-image").files[0];
+
+    reader.onload = function () {
+        // Inside reader.onload
+localStorage.setItem("newProduct", JSON.stringify(productData));
+localStorage.setItem("currentSeller", productData.whatsapp); // Save identifier
+window.location.href = "marketplace.html?new=true";
+
+      const productData = {
+        business: document.getElementById("business-name").value,
+        product: document.getElementById("product-name").value,
+        whatsapp: document.getElementById("whatsapp").value,
+        department: document.getElementById("department").value,
+        description: document.getElementById("description").value,
+        image: reader.result,
+        
+      };
+
+      localStorage.setItem("newProduct", JSON.stringify(productData));
+      window.location.href = "marketplace.html?new=true";
+    };
+
+    if (file) {
+      reader.readAsDataURL(file);
+    }
+  });
+</script>
+
+</body>
+
+</html>

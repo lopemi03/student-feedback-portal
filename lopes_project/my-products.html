@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>My Products</title>
+  <link rel="stylesheet" href="css/styles.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="market-container">
+    <h1>My Product Listings</h1>
+    <p class="description">These are the items you've posted.</p>
+
+    <div class="product-grid" id="myProductList"></div>
+
+    <a href="marketplace.html" class="submit-btn" style="margin-top: 30px; display:inline-block;">Back to Marketplace</a>
+  </div>
+
+  <script>
+    function displayMyProducts() {
+      const sellerID = localStorage.getItem("currentSeller");
+      const allProducts = JSON.parse(localStorage.getItem("products")) || [];
+
+      const myProducts = allProducts.filter(p => p.whatsapp === sellerID);
+      const container = document.getElementById("myProductList");
+
+      if (myProducts.length === 0) {
+        container.innerHTML = "<p>You haven’t posted any products yet.</p>";
+        return;
+      }
+
+     myProducts.forEach((product, index) => {
+  const card = document.createElement("div");
+  card.classList.add("product-card");
+
+  const whatsappLink = `https://wa.me/234${product.whatsapp.replace(/^0/, '')}?text=Hi%2C%20I'm%20interested%20in%20${encodeURIComponent(product.product)}`;
+
+  card.innerHTML = `
+    <img src="${product.image}" alt="Product Image" />
+    <h3>${product.product}</h3>
+    <p><strong>Seller:</strong> ${product.business}</p>
+    <p><strong>Dept:</strong> ${product.department}</p>
+    <p>${product.description}</p>
+    <a href="${whatsappLink}" target="_blank" class="whatsapp-btn">Buy on WhatsApp</a>
+    <button class="delete-btn">Delete</button>
+    <button class="edit-btn">Edit</button>
+  `;
+
+  card.querySelector(".delete-btn").addEventListener("click", () => {
+    const confirmDelete = confirm("Are you sure you want to delete this product?");
+    if (confirmDelete) {
+      const updated = allProducts.filter(p => !(p.whatsapp === product.whatsapp && p.product === product.product));
+      localStorage.setItem("products", JSON.stringify(updated));
+      location.reload(); // Refresh to reflect changes
+    }
+  });
+
+  container.appendChild(card);
+});
+
+
+    window.onload = displayMyProducts;
+  </script>
+</body>
+</html>

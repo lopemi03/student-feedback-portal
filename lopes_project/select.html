@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Select User Type</title>
+  <link rel="stylesheet" href="css/styles.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<style>
+    .select-container {
+  max-width: 600px;
+  margin: auto;
+  padding: 40px 20px;
+  text-align: center;
+  animation: fadeIn 1.5s ease-in-out;
+}
+
+.select-container h1 {
+  font-size: 1.8rem;
+  color: #37474f;
+  margin-bottom: 10px;
+}
+
+.select-container .description {
+  font-size: 1rem;
+  color: #666;
+  margin-bottom: 30px;
+}
+
+.options {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.card {
+  display: block;
+  background: #fff;
+  padding: 20px;
+  border-radius: 15px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+  text-decoration: none;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+
+.card h2 {
+  font-size: 1.5rem;
+  margin-bottom: 10px;
+}
+
+.card p {
+  font-size: 1rem;
+  color: #555;
+}
+
+.buyer {
+  border-left: 8px solid #00796b;
+}
+
+.seller {
+  border-left: 8px solid #f57c00;
+}
+</style>
+<body>
+  <div class="select-container">
+    <h1>How would you like to use RECTEM Trade Hub?</h1>
+    <p class="description">Choose your role below to continue</p>
+
+    <div class="options">
+      <a href="buyer.html" class="card buyer">
+        <h2>I'm a Buyer</h2>
+        <p>Looking to purchase items from fellow students.</p>
+      </a>
+
+      <a href="seller.html" class="card seller">
+        <h2>I'm a Seller</h2>
+        <p>Want to list and sell items to students on campus.</p>
+      </a>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Marketplace</title>
+  <link rel="stylesheet" href="css/marketplace.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="market-container">
+    <div class="top">
+    <h1>Explore Products</h1>
+    <input type="text" id="searchBar" placeholder="Search by product name..." onkeyup="filterProducts()">
+<a href="my-products.html" class="submit-btn" style="margin-bottom: 20px;">My Products</a>
+</div>
+
+    <div class="product-grid" id="productList">
+      <!-- Sample product card -->
+      <div class="product-card">
+        <img src="images/sample-product.jpg" alt="Product Image" />
+        <h3>Homemade Snacks</h3>
+        <p><strong>Seller:</strong> Tasty Bites</p>
+        <p><strong>Dept:</strong> Food Tech</p>
+        <a href="https://wa.me/2348123456789?text=Hi%20I'm%20interested%20in%20your%20Homemade%20Snacks" target="_blank" class="whatsapp-btn">Buy on WhatsApp</a>
+      </div>
+
+      <div class="product-card">
+        <img src="images/sample-product.jpg" alt="Product Image" />
+        <h3>Phone Accessories</h3>
+        <p><strong>Seller:</strong> GadgetzHub</p>
+        <p><strong>Dept:</strong> Engineering</p>
+        <a href="https://wa.me/2348098765432?text=Hello%2C%20I'm%20interested%20in%20Phone%20Accessories" target="_blank" class="whatsapp-btn">Buy on WhatsApp</a>
+      </div>
+      <!-- Add more cards as needed -->
+    </div>
+  </div>
+
+  <script>
+    function filterProducts() {
+      const input = document.getElementById("searchBar").value.toLowerCase();
+      const products = document.querySelectorAll(".product-card");
+      products.forEach(card => {
+        const name = card.querySelector("h3").textContent.toLowerCase();
+        card.style.display = name.includes(input) ? "block" : "none";
+      });
+    }
+
+  function filterProducts() {
+    const input = document.getElementById("searchBar").value.toLowerCase();
+    const products = document.querySelectorAll(".product-card");
+    products.forEach(card => {
+      const name = card.querySelector("h3").textContent.toLowerCase();
+      card.style.display = name.includes(input) ? "block" : "none";
+    });
+  }
+
+  // Function to read query params
+  function getParams() {
+    const params = new URLSearchParams(window.location.search);
+    return {
+      business: params.get("business"),
+      product: params.get("product"),
+      whatsapp: params.get("whatsapp"),
+      department: params.get("department"),
+      description: params.get("description"),
+    };
+  }
+
+  // Dynamically add product card if data is present
+  window.onload = () => {
+    const data = getParams();
+    if (data.business && data.product && data.whatsapp) {
+      const container = document.getElementById("productList");
+
+      const newCard = document.createElement("div");
+      newCard.classList.add("product-card");
+
+      newCard.innerHTML = `
+        <img src="images/sample-product.jpg" alt="Product Image" />
+        <h3>${data.product}</h3>
+        <p><strong>Seller:</strong> ${data.business}</p>
+        <p><strong>Dept:</strong> ${data.department}</p>
+        <p>${data.description}</p>
+        <a href="https://wa.me/234${data.whatsapp.replace(/^0/, '')}?text=Hi%2C%20I'm%20interested%20in%20${encodeURIComponent(data.product)}" target="_blank" class="whatsapp-btn">Buy on WhatsApp</a>
+      `;
+
+      container.prepend(newCard); // Add to the top
+    }
+  };
+
+
+  function filterProducts() {
+    const input = document.getElementById("searchBar").value.toLowerCase();
+    const products = document.querySelectorAll(".product-card");
+    products.forEach(card => {
+      const name = card.querySelector("h3").textContent.toLowerCase();
+      card.style.display = name.includes(input) ? "block" : "none";
+    });
+  }
+
+  function createCard(data) {
+    const container = document.getElementById("productList");
+    const newCard = document.createElement("div");
+    newCard.classList.add("product-card");
+
+    const whatsappLink = `https://wa.me/234${data.whatsapp.replace(/^0/, '')}?text=Hi%2C%20I'm%20interested%20in%20${encodeURIComponent(data.product)}`;
+
+    newCard.innerHTML = `
+      <img src="${data.image || 'images/sample-product.jpg'}" alt="Product Image" />
+      <h3>${data.product}</h3>
+      <p><strong>Seller:</strong> ${data.business}</p>
+      <p><strong>Dept:</strong> ${data.department}</p>
+      <p>${data.description}</p>
+      <a href="${whatsappLink}" target="_blank" class="whatsapp-btn">Buy on WhatsApp</a>
+    `;
+
+    container.prepend(newCard);
+  }
+
+  window.onload = () => {
+    // Load saved products from localStorage
+    const savedProducts = JSON.parse(localStorage.getItem("products")) || [];
+    savedProducts.forEach(p => createCard(p));
+
+    // If redirected from seller page, add the new one
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("new") === "true") {
+      const newProduct = JSON.parse(localStorage.getItem("newProduct"));
+      if (newProduct) {
+        createCard(newProduct);
+        savedProducts.unshift(newProduct); // Add to top
+        localStorage.setItem("products", JSON.stringify(savedProducts));
+        localStorage.removeItem("newProduct"); // Clean up
+
+        alert("Product added successfully!");
+      }
+    }
+  };
+
+
+  </script>
+</body>
+</html>
